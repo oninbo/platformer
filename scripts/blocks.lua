@@ -7,20 +7,20 @@
 --
 
 blocks = {}
-local sha = require "sha-256"
 
-function blocks.add(_name, _sprite)
-    local hash = sha.hash256(_name)
-    blocks[hash] = {
-        name = _name,
-        sprite = _sprite,
-        id = hash
-    }
+local nameIDs = {}
+
+blocks[1] = {
+    name = "dirt"
+}
+
+for i=1, #blocks do
+    nameIDs[blocks[i].name] = i
 end
 
-function blocks.get(_name)
-    local hash = sha.hash256(_name)
-    return blocks[hash]
+function blocks.getBlockByName(name)
+    return blocks[nameIDs[name]]
 end
 
+function blocks.getBlockIDByName(name) return nameIDs[name] end
 return blocks

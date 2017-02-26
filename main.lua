@@ -6,3 +6,9 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+function love.load()
+    require "scripts.map"
+    map.initialise()
+    require "scripts.blocks"
+    print(blocks.getBlockIDByName("dirt"))
+end
