@@ -6,21 +6,21 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-P = {}
-map = P
+map = {}
 
 local sizeX = 40;
 local sizeY = 30;
 
-function P.getSizeX() return sizeX end
-function P.getSizeY() return sizeY end
+function map.getSizeX() return sizeX end
+function map.getSizeY() return sizeY end
 
 local matrix = {}
 
-function P.create(sizex, sizey)
+function map.initialise(sizex, sizey)
     if sizex then sizeX = sizex end
     if sizey then sizeY = sizey end
     for i=1, sizeX do
+        table.insert(matrix, {})
         for j=1, sizeY do
             matrix[i][j] = 0
         end
