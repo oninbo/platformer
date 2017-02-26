@@ -8,15 +8,22 @@
 
 map = {}
 
-local sizeX = 40;
-local sizeY = 30;
+local matrix = {
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,1,0},
+    {1,1,1,1}
+}
 
-function map.getSizeX() return sizeX end
-function map.getSizeY() return sizeY end
+function map.goThrough(act)
+    for i=1, #matrix do
+        for j=1, #matrix[i] do
+            act(matrix[i][j], j-1, i-1)
+        end
+    end
+end
 
-local matrix = {}
-
-function map.initialise(sizex, sizey)
+--[[function map.initialise(sizex, sizey)
     if sizex then sizeX = sizex end
     if sizey then sizeY = sizey end
     for i=1, sizeX do
@@ -25,6 +32,6 @@ function map.initialise(sizex, sizey)
             matrix[i][j] = 0
         end
     end
-end
+end]]--
 
 return map

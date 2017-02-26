@@ -8,10 +8,23 @@
 
 blocks = {}
 
+local size = 32
+
+function blocks.getSizeOfBlock() return size end
 local nameIDs = {}
 
+blocks[0] = {
+    name = "void",
+    draw = function(x, y)
+    end
+}
 blocks[1] = {
-    name = "dirt"
+    name = "dirt",
+    sprite = love.graphics.newImage("images/dirt.png"),
+    draw = function(self, x, y)
+        self.sprite:setFilter("nearest","nearest")
+        love.graphics.draw(self.sprite, x*size, y*size, 0, 2)
+    end
 }
 
 for i=1, #blocks do

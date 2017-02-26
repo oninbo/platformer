@@ -8,7 +8,13 @@
 
 function love.load()
     require "scripts.map"
-    map.initialise()
     require "scripts.blocks"
-    print(blocks.getBlockIDByName("dirt"))
+end
+
+function love.draw()
+    map.goThrough(
+        function(id, x, y)
+            blocks[id]:draw(x, y)
+        end
+    )
 end
