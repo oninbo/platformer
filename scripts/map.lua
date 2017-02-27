@@ -6,32 +6,26 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-map = {}
-
-local matrix = {
-    {0,0,0,0},
-    {0,0,0,0},
-    {0,0,1,0},
-    {1,1,1,1}
+map = {
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    2,2,0,0,0,0,0,0,0,0,0,2,2,2,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
 }
 
-function map.goThrough(act)
-    for i=1, #matrix do
-        for j=1, #matrix[i] do
-            act(matrix[i][j], j-1, i-1)
-        end
-    end
+map.width = 16
+map.height = 12
+
+function map.get(x, y)
+    local i = 1+(map.width*y)+x
+    return map[i]
 end
-
---[[function map.initialise(sizex, sizey)
-    if sizex then sizeX = sizex end
-    if sizey then sizeY = sizey end
-    for i=1, sizeX do
-        table.insert(matrix, {})
-        for j=1, sizeY do
-            matrix[i][j] = 0
-        end
-    end
-end]]--
-
 return map

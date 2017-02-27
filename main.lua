@@ -8,13 +8,16 @@
 
 function love.load()
     require "scripts.map"
-    require "scripts.blocks"
+    require "scripts.tiles"
 end
 
 function love.draw()
-    map.goThrough(
-        function(id, x, y)
-            blocks[id]:draw(x, y)
+    for x=0, map.width-1 do
+        for y=0, map.height-1 do
+            local i = map.get(x,y)
+            if i ~= 0 then
+                tiles.draw(i, x, y)
+            end
         end
-    )
+    end
 end
