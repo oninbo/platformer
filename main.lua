@@ -7,8 +7,6 @@
 --
 
 function love.load()
-    require "scripts.map"
-    require "scripts.tiles"
 end
 
 function love.draw()
