@@ -7,8 +7,10 @@
 --
 
 function love.load()
+    require "scripts.game"
+    game.start()
 end
 
 function love.draw()
-
+    game.drawMap()
 end

@@ -11,9 +11,11 @@ tiles = {}
 local tilesheet = love.graphics.newImage("images/bricks.png")
 tilesheet:setFilter("nearest","nearest")
 local tileSize = 16
+local scale = 2
+tiles.tileSize = tileSize*scale
+
 local sheetW = tilesheet:getWidth()/tileSize
 local sheetH = tilesheet:getHeight()/tileSize
-print(sheetW, sheetH)
 
 for i=0, sheetW-1 do
     for j=0, sheetH-1 do
@@ -22,7 +24,9 @@ for i=0, sheetW-1 do
 end
 
 function tiles.draw(index, x, y)
-    love.graphics.draw(tilesheet, tiles[index], x*tileSize, y*tileSize)
+    if tiles[index] ~= nil then
+        love.graphics.draw(tilesheet, tiles[index], x*tiles.tileSize, y*tiles.tileSize, 0, scale)
+    end
 end
 
 return tiles
