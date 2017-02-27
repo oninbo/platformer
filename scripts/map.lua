@@ -28,4 +28,7 @@ function map.get(x, y)
     local i = 1+(map.width*y)+x
     return map[i]
 end
+
+map.spawnPoint = {x=8, y=10}
+
 return map
