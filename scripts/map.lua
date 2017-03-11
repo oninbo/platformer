@@ -24,11 +24,16 @@ map = {
 map.width = 16
 map.height = 12
 
+local function XYto1D(x, y) return 1+(map.width*y)+x end
+
 function map.get(x, y)
-    local i = 1+(map.width*y)+x
-    return map[i]
+    return map[XYto1D(x, y)]
 end
 
-map.spawnPoint = {x=8, y=10}
+function map.put(value, x, y)
+    map[XYto1D(x, y)] = value
+end
+
+map.spawnPoint = {x = 8, y = 11}
 
 return map

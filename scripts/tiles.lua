@@ -25,8 +25,18 @@ end
 
 function tiles.draw(index, x, y)
     if tiles[index] ~= nil then
-        love.graphics.draw(tilesheet, tiles[index], x*tiles.tileSize, y*tiles.tileSize, 0, scale)
+        love.graphics.draw(tilesheet, tiles[index], x, y, 0, scale)
     end
 end
+
+tiles.IndexByName = {
+    ["grey bricks"] = 1,
+    ["dirt"] = 2,
+    ["dirt with grass"] = 3,
+    ["grey block"] = 4,
+    ["yellow block"] = 6,
+    ["blue sky"] = 10,
+    ["red bricks"] = 21
+}
 
 return tiles

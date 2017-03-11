@@ -13,4 +13,5 @@ end
 
 function love.draw()
     game.drawMap()
+    game.drawPlayer()
 end
