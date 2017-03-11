@@ -11,6 +11,10 @@ function love.load()
     game.start()
 end
 
+function love.update(dt)
+    game.setPlayerCoordinates(dt)
+end
+
 function love.draw()
     game.drawMap()
     game.drawPlayer()

@@ -35,6 +35,12 @@ function game.setInitialPlayerCoordinates()
     local spawnPoint = map.spawnPoint
     player.setCoordinates(spawnPoint.x*tiles.tileSize-player.size, spawnPoint.y*tiles.tileSize-player.size)
 end
+
 function game.drawPlayer()
     player.draw()
+end
+
+function game.setPlayerCoordinates(dt)
+    if love.keyboard.isDown("left") then player.x = player.x - player.speed*dt
+    elseif love.keyboard.isDown("right") then player.x = player.x + player.speed*dt end
 end
