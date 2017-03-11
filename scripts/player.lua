@@ -9,7 +9,7 @@
 player = {
     x = 0,
     y = 0,
-    size = 28,
+    size = 25,
     speed = 100,
     sprite = "yellow block"
 }
