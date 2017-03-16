@@ -6,6 +6,13 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+local function minAbs(a, b)
+    if math.abs(a) <= math.abs(b) then return a
+        else return b end
+end
+
+local G = 30
+
 game = {}
 
 function game.start()
@@ -13,7 +20,7 @@ function game.start()
     require "scripts.tiles"
 
     love.window.setTitle("My Platformer")
-    love.window.setMode(tiles.tileSize*map.width, tiles.tileSize*map.height, {resizable=false, vsync=false})
+    love.window.setMode(tiles.tileSize*map.width, tiles.tileSize*map.height, {resizable=false, vsync=true})
 
     require "scripts.player"
     game.setInitialPlayerCoordinates()
@@ -76,15 +83,38 @@ local function distanseToObstacle(direction)
     end
 end
 
-function game.setPlayerCoordinates(dt)
+function game.setPlayerSpeed(dt)
     if love.keyboard.isDown("left") then
-        player.x = player.x - math.min(player.speed*dt, distanseToObstacle("left"))
+        player.speedX = - player.speed
     elseif love.keyboard.isDown("right") then
-        player.x = player.x + math.min(player.speed*dt, distanseToObstacle("right"))
-    end
-    if love.keyboard.isDown("up") then
-        player.y = player.y - math.min(player.speed*dt, distanseToObstacle("up"))
+        player.speedX = player.speed
     else
-        player.y = player.y + math.min(player.speed*dt, distanseToObstacle("down"))
+        player.speedX = 0
+    end
+    if distanseToObstacle("up") == 0 or distanseToObstacle("down") == 0 then
+        player.speedY = 0
+    end
+    player.speedY = player.speedY - G*dt
+    if love.keyboard.isDown("space") then
+        if distanseToObstacle("down") == 0 then
+            player.jumping = true
+        end
+        if player.jumping and player.speedY <= player.jumpSpeed then
+            player.speedY = player.speedY + player.jumpSpeed*dt
+        end
+    else
+        player.jumping = false
+    end
+end
+function game.setPlayerCoordinates(dt)
+    if player.speedX > 0 then
+        player.x = player.x + minAbs(player.speedX*dt, distanseToObstacle("right"))
+    else
+        player.x = player.x + minAbs(player.speedX*dt, -distanseToObstacle("left"))
+    end
+    if player.speedY > 0 then
+        player.y = player.y - minAbs(player.speedY*dt, distanseToObstacle("up"))
+    else
+        player.y = player.y - minAbs(player.speedY*dt, -distanseToObstacle("down"))
     end
 end

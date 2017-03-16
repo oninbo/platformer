@@ -11,6 +11,11 @@ player = {
     y = 0,
     size = 25,
     speed = 100,
+    jumpSpeed = 300,
+    jumpHeight = 200,
+    jumping = false,
+    speedX = 0,
+    speedY = 0,
     sprite = "yellow block"
 }
 
