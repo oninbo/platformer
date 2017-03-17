@@ -118,7 +118,7 @@ local function distanseToObstacle(object, direction)
         return math.abs(player.y+player.height - map.height*tiles.tileSize)
     end
 end
-local function distanceToPrecipice(object, direction)
+local function distanceToEdge(object, direction)
     local locations = getLocation(object)
     local minX = locations.minX
     local maxX = locations.maxX
@@ -134,6 +134,18 @@ local function distanceToPrecipice(object, direction)
         end
         return math.abs(object.x+object.width - map.width*tiles.tileSize)
     end
+end
+local function collide(object1, object2)
+    local o1x0 = object1.x
+    local o1x1 = object1.x + object1.width
+    local o2x0 = object2.x
+    local o2x1 = object2.x + object2.width
+    local o1y0 = object1.y
+    local o1y1 = object1.y + object1.height
+    local o2y0 = object2.y
+    local o2y1 = object2.y + object2.height
+    return ((o1x0 <= o2x1 and o1x0 >= o2x0) or (o1x1 <= o2x1 and o1x1 >= o2x0)) and
+            ((o1y0 <= o2y1 and o1y0 >= o2y0) or (o1y1 <= o2y1 and o1y1 >= o2y0))
 end
 
 function game.setPlayerSpeed(dt)
@@ -199,8 +211,8 @@ end
 function game.setEnemiesSpeed(dt)
     for i = 1, #enemies do
         local enemy = enemies[i]
-        local leftDistance = math.min(distanseToObstacle(enemy, "left"), distanceToPrecipice(enemy, "left"))
-        local rightDistance = math.min(distanseToObstacle(enemy, "right"), distanceToPrecipice(enemy, "right"))
+        local leftDistance = math.min(distanseToObstacle(enemy, "left"), distanceToEdge(enemy, "left"))
+        local rightDistance = math.min(distanseToObstacle(enemy, "right"), distanceToEdge(enemy, "right"))
         if leftDistance == 0 then
             enemy.speedX = enemy.speed
         elseif rightDistance == 0 then
@@ -214,12 +226,12 @@ function game.setEnemiesSpeed(dt)
         end
     end
 end
-
 function game.setEnemiesCoordinates(dt)
     for i = 1, #enemies do
         local enemy = enemies[i]
-        local leftDistance = math.min(distanseToObstacle(enemy, "left"), distanceToPrecipice(enemy, "left"))
-        local rightDistance = math.min(distanseToObstacle(enemy, "right"), distanceToPrecipice(enemy, "right"))
+       -- if collide(enemy, player) then love.window.showMessageBox( "collides", i, "info", true ) end
+        local leftDistance = math.min(distanseToObstacle(enemy, "left"), distanceToEdge(enemy, "left"))
+        local rightDistance = math.min(distanseToObstacle(enemy, "right"), distanceToEdge(enemy, "right"))
         if enemy.speedX > 0 then
             enemy.x = enemy.x + minAbs(rightDistance, enemy.speedX*dt)
         elseif enemy.speedX < 0 then
