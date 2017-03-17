@@ -18,5 +18,6 @@ end
 
 function love.draw()
     game.drawMap()
+    game.drawEnemies()
     game.drawPlayer()
 end

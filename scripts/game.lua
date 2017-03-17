@@ -25,6 +25,8 @@ function game.start()
 
     require "scripts.player"
     game.setInitialPlayerCoordinates()
+    require "scripts.enemies"
+    game.setInitialEnemiesCoordinates()
 end
 
 function game.drawMap()
@@ -41,11 +43,31 @@ end
 
 function game.setInitialPlayerCoordinates()
     local spawnPoint = map.spawnPoint
-    player.setCoordinates(spawnPoint.x*tiles.tileSize, spawnPoint.y*tiles.tileSize-player.height)
+    player.x = spawnPoint.x*tiles.tileSize
+    player.y = spawnPoint.y*tiles.tileSize-player.height
+end
+
+function game.setInitialEnemiesCoordinates()
+    math.randomseed(os.time())
+    for i=1, #enemies do
+        local x, y
+        repeat
+            x = math.random(map.width) - 1
+            y = math.random(map.height) - 1
+        until map.get(x, y) == 0 and map.get(x,y + 1) ~= 0
+        enemies[i].x = x*tiles.tileSize
+        enemies[i].y = (y + 1)*tiles.tileSize - enemies[i].height
+    end
 end
 
 function game.drawPlayer()
-    player.draw()
+    love.graphics.rectangle("fill", player.x, player.y, player.width, player.height)
+end
+
+function game.drawEnemies()
+    for i=1, #enemies do
+        love.graphics.rectangle("fill", enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height)
+    end
 end
 
 local function distanseToObstacle(direction)

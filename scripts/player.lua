@@ -23,10 +23,4 @@ player = {
     sprite = "yellow block"
 }
 
-function player.draw()
-    love.graphics.rectangle("fill", player.x, player.y, player.width, player.height)
-end
-
-function player.setCoordinates(x, y) player.x = x player.y = y end
-
 return player
