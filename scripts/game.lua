@@ -70,11 +70,21 @@ function game.drawEnemies()
     end
 end
 
-local function distanseToObstacle(direction)
-    local minX = math.floor(player.x / tiles.tileSize)
-    local maxX = math.ceil((player.x+player.width) / tiles.tileSize)-1
-    local minY = math.floor(player.y / tiles.tileSize)
-    local maxY = math.ceil((player.y + player.height) / tiles.tileSize)-1
+local function getLocation(object)
+    return {
+        minX = math.floor(object.x / tiles.tileSize),
+        maxX = math.ceil((object.x+object.width) / tiles.tileSize)-1,
+        minY = math.floor(object.y / tiles.tileSize),
+        maxY = math.ceil((object.y + object.height) / tiles.tileSize)-1
+    }
+end
+local function distanseToObstacle(object, direction)
+    local player = object
+    local locations = getLocation(object)
+    local minX = locations.minX
+    local maxX = locations.maxX
+    local minY = locations.minY
+    local maxY = locations.maxY
     if direction == "left" then
         for x = minX, 0, -1 do
             for y = minY, maxY do
@@ -88,7 +98,7 @@ local function distanseToObstacle(direction)
                 if map.get(x, y) ~= 0 then return math.abs(player.x+player.width - x*tiles.tileSize) end
             end
         end
-        return math.abs(player.x+player.size - map.width*tiles.tileSize)
+        return math.abs(player.x+player.width - map.width*tiles.tileSize)
     elseif direction == "up" then
         for y = minY, 0, -1 do
             for x = minX, maxX do
@@ -102,12 +112,29 @@ local function distanseToObstacle(direction)
                 if map.get(x, y) ~= 0 then return math.abs(player.y+player.height - y*tiles.tileSize) end
             end
         end
-        return math.abs(player.y+player.size - map.height*tiles.tileSize)
+        return math.abs(player.y+player.height - map.height*tiles.tileSize)
+    end
+end
+local function distanceToPrecipice(object, direction)
+    local locations = getLocation(object)
+    local minX = locations.minX
+    local maxX = locations.maxX
+    local y = locations.maxY + 1
+    if direction == "left" then
+        for x = minX, 0, -1 do
+            if map.get(x, y) == 0 then return math.abs(object.x - (x+1)*tiles.tileSize) end
+        end
+        return math.abs(object.x)
+    elseif direction == "right" then
+        for x = maxX, map.width do
+            if map.get(x, y) == 0 then return math.abs(object.x+object.width - x*tiles.tileSize) end
+        end
+        return math.abs(object.x+object.width - map.width*tiles.tileSize)
     end
 end
 
 function game.setPlayerSpeed(dt)
-    if distanseToObstacle("left") == 0 or distanseToObstacle("right") == 0 then
+    if distanseToObstacle(player, "left") == 0 or distanseToObstacle(player, "right") == 0 then
         player.speedX = 0
         player.running = false
     end
@@ -136,12 +163,12 @@ function game.setPlayerSpeed(dt)
         player.speedX = player.speedX + math.min(friction*dt, math.abs(player.speedX))
     end
 
-    if distanseToObstacle("up") == 0 or distanseToObstacle("down") == 0 then
+    if distanseToObstacle(player, "up") == 0 or distanseToObstacle(player, "down") == 0 then
         player.speedY = 0
         player.jumping = false
     end
     if love.keyboard.isDown("space") then
-        if distanseToObstacle("down") == 0 then
+        if distanseToObstacle(player, "down") == 0 then
             player.jumping = true
             player.speedY = player.jumpSpeed
         end
@@ -155,13 +182,45 @@ function game.setPlayerSpeed(dt)
 end
 function game.setPlayerCoordinates(dt)
     if player.speedX > 0 then
-        player.x = player.x + minAbs(player.speedX*dt, distanseToObstacle("right"))
+        player.x = player.x + minAbs(player.speedX*dt, distanseToObstacle(player, "right"))
     else
-        player.x = player.x + minAbs(player.speedX*dt, -distanseToObstacle("left"))
+        player.x = player.x + minAbs(player.speedX*dt, -distanseToObstacle(player, "left"))
     end
     if player.speedY > 0 then
-        player.y = player.y - minAbs(player.speedY*dt, distanseToObstacle("up"))
+        player.y = player.y - minAbs(player.speedY*dt, distanseToObstacle(player, "up"))
     else
-        player.y = player.y - minAbs(player.speedY*dt, -distanseToObstacle("down"))
+        player.y = player.y - minAbs(player.speedY*dt, -distanseToObstacle(player, "down"))
+    end
+end
+
+function game.setEnemiesSpeed(dt)
+    for i = 1, #enemies do
+        local enemy = enemies[i]
+        local leftDistance = math.min(distanseToObstacle(enemy, "left"), distanceToPrecipice(enemy, "left"))
+        local rightDistance = math.min(distanseToObstacle(enemy, "right"), distanceToPrecipice(enemy, "right"))
+        if leftDistance == 0 then
+            enemy.speedX = enemy.speed
+        elseif rightDistance == 0 then
+            enemy.speedX = -enemy.speed
+        elseif enemy.speedX == 0 then
+            if leftDistance > rightDistance then
+                enemy.speedX = -enemy.speed
+            else
+                enemy.speedX = enemy.speed
+            end
+        end
+    end
+end
+
+function game.setEnemiesCoordinates(dt)
+    for i = 1, #enemies do
+        local enemy = enemies[i]
+        local leftDistance = math.min(distanseToObstacle(enemy, "left"), distanceToPrecipice(enemy, "left"))
+        local rightDistance = math.min(distanseToObstacle(enemy, "right"), distanceToPrecipice(enemy, "right"))
+        if enemy.speedX > 0 then
+            enemy.x = enemy.x + minAbs(rightDistance, enemy.speedX*dt)
+        elseif enemy.speedX < 0 then
+            enemy.x = enemy.x + minAbs(-leftDistance, enemy.speedX*dt)
+        end
     end
 end

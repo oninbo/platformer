@@ -8,13 +8,13 @@
 
 enemies = {}
 
-local number = 3
+local number = 5
 
 for i=1, number do
     enemies[i] = {
         x = 0,
         y = 0,
-        speed = 150,
+        speed = 100,
         speedX = 0,
         width = 20,
         height = 32
