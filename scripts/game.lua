@@ -12,6 +12,7 @@ local function minAbs(a, b)
 end
 
 local G = 900
+local friction = 500
 
 game = {}
 
@@ -84,13 +85,35 @@ local function distanseToObstacle(direction)
 end
 
 function game.setPlayerSpeed(dt)
-    if love.keyboard.isDown("left") then
-        player.speedX = - player.speed
-    elseif love.keyboard.isDown("right") then
-        player.speedX = player.speed
-    else
+    if distanseToObstacle("left") == 0 or distanseToObstacle("right") == 0 then
         player.speedX = 0
+        player.running = false
     end
+    if love.keyboard.isDown("left") then
+        if player.speedX == 0 then
+            --player.speedX = -player.speed
+            player.running = true
+        end
+        if player.running and player.speedX > -player.speed then
+            player.speedX = player.speedX - player.acceleration*dt
+        end
+    elseif love.keyboard.isDown("right") then
+        if player.speedX == 0 then
+            --player.speedX = player.speed
+            player.running = true
+        end
+        if player.running and player.speedX < player.speed then
+            player.speedX = player.speedX + player.acceleration*dt
+        end
+    else
+        player.running = false
+    end
+    if player.speedX > 0 then
+        player.speedX = player.speedX - math.min(friction*dt, player.speedX)
+    elseif player.speedX < 0 then
+        player.speedX = player.speedX + math.min(friction*dt, math.abs(player.speedX))
+    end
+
     if distanseToObstacle("up") == 0 or distanseToObstacle("down") == 0 then
         player.speedY = 0
         player.jumping = false
