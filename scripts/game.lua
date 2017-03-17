@@ -11,7 +11,7 @@ local function minAbs(a, b)
         else return b end
 end
 
-local G = 350
+local G = 900
 
 game = {}
 
@@ -93,14 +93,12 @@ function game.setPlayerSpeed(dt)
     end
     if distanseToObstacle("up") == 0 or distanseToObstacle("down") == 0 then
         player.speedY = 0
+        player.jumping = false
     end
     if love.keyboard.isDown("space") then
         if distanseToObstacle("down") == 0 then
             player.jumping = true
             player.speedY = player.jumpSpeed
-        end
-        if player.speedY > player.jumpSpeed then
-            player.jumping = false
         end
         if player.jumping then
             player.speedY = player.speedY + player.jumpSpeed*dt
