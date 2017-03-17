@@ -40,7 +40,7 @@ end
 
 function game.setInitialPlayerCoordinates()
     local spawnPoint = map.spawnPoint
-    player.setCoordinates(spawnPoint.x*tiles.tileSize, spawnPoint.y*tiles.tileSize-player.size)
+    player.setCoordinates(spawnPoint.x*tiles.tileSize, spawnPoint.y*tiles.tileSize-player.height)
 end
 
 function game.drawPlayer()
@@ -49,9 +49,9 @@ end
 
 local function distanseToObstacle(direction)
     local minX = math.floor(player.x / tiles.tileSize)
-    local maxX = math.ceil((player.x+player.size) / tiles.tileSize)-1
+    local maxX = math.ceil((player.x+player.width) / tiles.tileSize)-1
     local minY = math.floor(player.y / tiles.tileSize)
-    local maxY = math.ceil((player.y + player.size) / tiles.tileSize)-1
+    local maxY = math.ceil((player.y + player.height) / tiles.tileSize)-1
     if direction == "left" then
         for x = minX, 0, -1 do
             for y = minY, maxY do
@@ -62,7 +62,7 @@ local function distanseToObstacle(direction)
     elseif direction == "right" then
         for x = maxX, map.width do
             for y = minY, maxY do
-                if map.get(x, y) ~= 0 then return math.abs(player.x+player.size - x*tiles.tileSize) end
+                if map.get(x, y) ~= 0 then return math.abs(player.x+player.width - x*tiles.tileSize) end
             end
         end
         return math.abs(player.x+player.size - map.width*tiles.tileSize)
@@ -76,7 +76,7 @@ local function distanseToObstacle(direction)
     elseif direction == "down" then
         for y = maxY, map.height do
             for x = minX, maxX do
-                if map.get(x, y) ~= 0 then return math.abs(player.y+player.size - y*tiles.tileSize) end
+                if map.get(x, y) ~= 0 then return math.abs(player.y+player.height - y*tiles.tileSize) end
             end
         end
         return math.abs(player.y+player.size - map.height*tiles.tileSize)
@@ -101,7 +101,7 @@ function game.setPlayerSpeed(dt)
             player.speedY = player.jumpSpeed
         end
         if player.jumping then
-            player.speedY = player.speedY + player.jumpSpeed*dt
+            player.speedY = player.speedY + player.jumpAcceleration*dt
         end
     else
         player.jumping = false

@@ -10,8 +10,11 @@ player = {
     x = 0,
     y = 0,
     size = 25,
+    width = 25,
+    height = 30,
     speed = 150,
-    jumpSpeed = 400,
+    jumpAcceleration = 550,
+    jumpSpeed = 350,
     jumping = false,
     speedX = 0,
     speedY = 0,
@@ -19,7 +22,7 @@ player = {
 }
 
 function player.draw()
-    love.graphics.rectangle("fill", player.x, player.y, player.size, player.size)
+    love.graphics.rectangle("fill", player.x, player.y, player.width, player.height)
 end
 
 function player.setCoordinates(x, y) player.x = x player.y = y end
