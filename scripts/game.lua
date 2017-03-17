@@ -30,6 +30,7 @@ function game.start()
 end
 
 function game.drawMap()
+    love.graphics.setColor(0, 155, 255)
     for x=0, map.width-1 do
         for y=0, map.height-1 do
             local i = map.get(x, y)
@@ -61,10 +62,12 @@ function game.setInitialEnemiesCoordinates()
 end
 
 function game.drawPlayer()
+    love.graphics.setColor(0, 255, 105)
     love.graphics.rectangle("fill", player.x, player.y, player.width, player.height)
 end
 
 function game.drawEnemies()
+    love.graphics.setColor(255, 150, 0)
     for i=1, #enemies do
         love.graphics.rectangle("fill", enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height)
     end
