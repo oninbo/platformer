@@ -12,6 +12,7 @@ function love.load()
 end
 
 function love.update(dt)
+    game.checkCollision(dt)
     game.setEnemiesSpeed(dt)
     game.setEnemiesCoordinates(dt)
     game.setPlayerSpeed(dt)

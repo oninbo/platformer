@@ -248,3 +248,14 @@ function game.setEnemiesCoordinates(dt)
         end
     end
 end
+
+function game.checkCollision(dt)
+    for i = 1, #enemies do
+        local enemy = enemies[i]
+        if collide(player, enemy) then
+            player.speedX = enemy.speedX - player.speedX
+            enemy.speedX = -enemy.speedX
+            player.speedY = - player.speedY
+        end
+    end
+end

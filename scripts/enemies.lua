@@ -16,8 +16,8 @@ for i=1, number do
         y = 0,
         speed = 80,
         speedX = 0,
-        width = 16,
-        height = 16
+        width = 20,
+        height = 20
     }
 end
 
