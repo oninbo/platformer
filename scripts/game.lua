@@ -37,15 +37,24 @@ function game.drawMap()
             local _x = x*tiles.tileSize
             local _y = y*tiles.tileSize
             tiles.draw(i, _x, _y)
-            --if i == 0 then tiles.draw(tiles.IndexByName["blue sky"], _x, _y) end
         end
     end
+end
+
+local function enemiesOnLine(object)
+    local n = 0
+    for i = 1, #enemies do
+        if enemies[i].y + enemies[i].height == object.y + object.height then
+            n = n + 1
+        end
+    end
+    return n
 end
 
 function game.setInitialPlayerCoordinates()
     local spawnPoint = map.spawnPoint
     player.x = spawnPoint.x*tiles.tileSize
-    player.y = spawnPoint.y*tiles.tileSize-player.height
+    player.y = (spawnPoint.y+1)*tiles.tileSize-player.height
 end
 
 function game.setInitialEnemiesCoordinates()
@@ -55,9 +64,10 @@ function game.setInitialEnemiesCoordinates()
         repeat
             x = math.random(map.width) - 1
             y = math.random(map.height) - 1
-        until map.get(x, y) == 0 and map.get(x,y + 1) ~= 0
-        enemies[i].x = x*tiles.tileSize
-        enemies[i].y = (y + 1)*tiles.tileSize - enemies[i].height
+            enemies[i].x = x*tiles.tileSize
+            enemies[i].y = (y + 1)*tiles.tileSize - enemies[i].height
+        until map.get(x, y) == 0 and map.get(x,y + 1) ~= 0 and enemiesOnLine(enemies[i]) == 1
+            and map.spawnPoint.x ~= x and map.spawnPoint.y ~= y
     end
 end
 
@@ -187,11 +197,11 @@ function game.setPlayerSpeed(dt)
             player.jumping = true
             player.speedY = player.jumpSpeed
         end
-        if player.jumping then
-            player.speedY = player.speedY + player.jumpAcceleration*dt
-        end
     else
         player.jumping = false
+    end
+    if player.jumping then
+        player.speedY = player.speedY + player.jumpAcceleration*dt
     end
     player.speedY = player.speedY - G*dt
 end
@@ -229,7 +239,6 @@ end
 function game.setEnemiesCoordinates(dt)
     for i = 1, #enemies do
         local enemy = enemies[i]
-       -- if collide(enemy, player) then love.window.showMessageBox( "collides", i, "info", true ) end
         local leftDistance = math.min(distanseToObstacle(enemy, "left"), distanceToEdge(enemy, "left"))
         local rightDistance = math.min(distanseToObstacle(enemy, "right"), distanceToEdge(enemy, "right"))
         if enemy.speedX > 0 then

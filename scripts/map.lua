@@ -34,6 +34,6 @@ function map.put(value, x, y)
     map[XYto1D(x, y)] = value
 end
 
-map.spawnPoint = {x = 8, y = 11}
+map.spawnPoint = {x = 8, y = 10}
 
 return map
