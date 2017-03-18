@@ -14,8 +14,8 @@ end
 function love.update(dt)
     game.checkCollision(dt)
     game.setEnemiesSpeed(dt)
-    game.setEnemiesCoordinates(dt)
     game.setPlayerSpeed(dt)
+    game.setEnemiesCoordinates(dt)
     game.setPlayerCoordinates(dt)
 end
 

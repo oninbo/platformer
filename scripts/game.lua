@@ -6,9 +6,11 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local function minAbs(a, b)
-    if math.abs(a) <= math.abs(b) then return a
-        else return b end
+local function minAbs(a, b, c)
+    if not c then c = math.huge end
+    if math.abs(a) <= math.abs(b) and math.abs(a) <= math.abs(c) then return a
+    elseif math.abs(b) <= math.abs(a) and math.abs(b) <= math.abs(c) then return b
+    else return c end
 end
 
 local G = 900
@@ -83,6 +85,16 @@ function game.drawEnemies()
     end
 end
 
+local function intersects(x1, x2, x3, x4)
+    if x1 > x2 then
+        x1, x2 = x2, x1
+    end
+    if x3 > x4 then
+        x3, x4 = x4, x3
+    end
+    return (x2 >= x3 and x2 <= x4) or (x1 >= x3 and x1 <= x4)
+end
+
 local function getLocation(object)
     return {
         minX = math.floor(object.x / tiles.tileSize),
@@ -145,6 +157,23 @@ local function distanceToEdge(object, direction)
         return math.abs(object.x+object.width - map.width*tiles.tileSize)
     end
 end
+local function distanceToEnemy(object, direction)
+    local distance = math.huge
+    for i = 1, #enemies do
+        local enemy = enemies[i]
+        if direction == "left" and object.x - enemy.x >=0 and intersects(object.y, object.y + object.height, enemy.y, enemy.y + enemy.height) then
+            distance = math.min(distance, object.x - enemy.x - enemy.width)
+        elseif direction == "right" and enemy.x - object.x>=0 and intersects(object.y, object.y + object.height, enemy.y, enemy.y + enemy.height) then
+            distance = math.min(distance, enemy.x - object.x - object.width)
+        elseif direction == "up" and object.y - enemy.y>=0 and intersects(object.x, object.x + object.width, enemy.x, enemy.x + enemy.width) then
+            distance = math.min(distance, object.y - enemy.y - enemy.height)
+        elseif direction == "down" and enemy.y - object.y>=0 and intersects(object.x, object.x + object.width, enemy.x, enemy.x + enemy.width) then
+            distance = math.min(distance, enemy.y - object.y - object.height)
+        end
+    end
+    return distance
+end
+
 local function collide(object1, object2)
     local o1x0 = object1.x
     local o1x1 = object1.x + object1.width
@@ -165,7 +194,6 @@ function game.setPlayerSpeed(dt)
     end
     if love.keyboard.isDown("left") then
         if player.speedX == 0 then
-            --player.speedX = -player.speed
             player.running = true
         end
         if player.running and player.speedX > -player.speed then
@@ -195,26 +223,26 @@ function game.setPlayerSpeed(dt)
     if love.keyboard.isDown("space") then
         if distanseToObstacle(player, "down") == 0 then
             player.jumping = true
-            player.speedY = player.jumpSpeed
+            player.speedY = -player.jumpSpeed
         end
     else
         player.jumping = false
     end
     if player.jumping then
-        player.speedY = player.speedY + player.jumpAcceleration*dt
+        player.speedY = player.speedY - player.jumpAcceleration*dt
     end
-    player.speedY = player.speedY - G*dt
+    player.speedY = player.speedY + G*dt
 end
 function game.setPlayerCoordinates(dt)
     if player.speedX > 0 then
-        player.x = player.x + minAbs(player.speedX*dt, distanseToObstacle(player, "right"))
+        player.x = player.x + minAbs(player.speedX*dt, distanseToObstacle(player, "right"), distanceToEnemy(player, "right"))
     else
-        player.x = player.x + minAbs(player.speedX*dt, -distanseToObstacle(player, "left"))
+        player.x = player.x + minAbs(player.speedX*dt, -distanseToObstacle(player, "left"), -distanceToEnemy(player, "left"))
     end
     if player.speedY > 0 then
-        player.y = player.y - minAbs(player.speedY*dt, distanseToObstacle(player, "up"))
+        player.y = player.y + minAbs(player.speedY*dt, distanseToObstacle(player, "down"), distanceToEnemy(player, "down"))
     else
-        player.y = player.y - minAbs(player.speedY*dt, -distanseToObstacle(player, "down"))
+        player.y = player.y + minAbs(player.speedY*dt, -distanseToObstacle(player, "up"), -distanceToEnemy(player, "up"))
     end
 end
 
@@ -253,8 +281,8 @@ function game.checkCollision(dt)
     for i = 1, #enemies do
         local enemy = enemies[i]
         if collide(player, enemy) then
-            player.speedX = enemy.speedX - player.speedX
-            enemy.speedX = -enemy.speedX
+            if player.y + player.height > enemy.y then player.speedX = enemy.speedX - player.speedX end
+            enemy.speedX = - enemy.speedX
             player.speedY = - player.speedY
         end
     end

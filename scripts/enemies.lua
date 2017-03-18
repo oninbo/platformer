@@ -8,7 +8,7 @@
 
 enemies = {}
 
-local number = 5
+local number = 3
 
 for i=1, number do
     enemies[i] = {
